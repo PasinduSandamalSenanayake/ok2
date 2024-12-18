@@ -22,16 +22,46 @@ router.post(
 );
 
 // Get All Products
+const axios = require("axios");
+
+// Get All Products
 router.get("/", async (req, res) => {
   try {
     const products = await Product.find();
-    // .populate({
-    //   path: "userId",
-    //   select: "username",
-    // });
+
+    // Fetch user details for each product
+    const enrichedProducts = await Promise.all(
+      products.map(async (product) => {
+        try {
+          // Fetch user details from the auth API
+          const response = await axios.get(
+            `https://ok2-183873252446.asia-south1.run.app/auth/${product.userId}`
+          );
+          const username = response.data.username;
+          const userRole = response.data.role;
+
+          // Add the username to the product object
+          return {
+            ...product.toObject(),
+            username,
+            userRole,
+          };
+        } catch (error) {
+          console.error(
+            `Error fetching user details for userId: ${product.userId}`,
+            error.message
+          );
+          return {
+            ...product.toObject(),
+            username: "Unknown", // Fallback if the API call fails
+          };
+        }
+      })
+    );
+
     res.status(200).json({
       message: "Success",
-      data: products,
+      data: enrichedProducts,
     });
   } catch (err) {
     res.status(400).send(err.message);
