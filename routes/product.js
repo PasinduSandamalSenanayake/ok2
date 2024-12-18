@@ -5,23 +5,33 @@ const { authenticate, authorize } = require("../middleware/auth");
 const router = express.Router();
 
 // Create Product (Admin only)
-router.post("/", authenticate, authorize(["admin"]), async (req, res) => {
-  const { name, price } = req.body;
+router.post(
+  "/",
+  // authenticate, authorize(["admin"]),
+  async (req, res) => {
+    const { name, price } = req.body;
 
-  try {
-    const product = new Product({ name, price });
-    await product.save();
-    res.status(201).send("Product Created");
-  } catch (err) {
-    res.status(400).send(err.message);
+    try {
+      const product = new Product({ name, price });
+      await product.save();
+      res.status(201).send("Product Created");
+    } catch (err) {
+      res.status(400).send(err.message);
+    }
   }
-});
+);
 
 // Get All Products
 router.get("/", async (req, res) => {
   try {
-    const products = await Product.find();
-    res.send(products);
+    const products = await Product.find().populate({
+      path: "userId",
+      select: "username",
+    });
+    res.status(200).json({
+      message: "Success",
+      data: products,
+    });
   } catch (err) {
     res.status(400).send(err.message);
   }
