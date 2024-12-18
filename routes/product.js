@@ -9,10 +9,10 @@ router.post(
   "/",
   // authenticate, authorize(["admin"]),
   async (req, res) => {
-    const { name, price } = req.body;
+    const { name, price, userId } = req.body;
 
     try {
-      const product = new Product({ name, price });
+      const product = new Product({ name, price, userId });
       await product.save();
       res.status(201).send("Product Created");
     } catch (err) {
@@ -24,10 +24,11 @@ router.post(
 // Get All Products
 router.get("/", async (req, res) => {
   try {
-    const products = await Product.find().populate({
-      path: "userId",
-      select: "username",
-    });
+    const products = await Product.find();
+    // .populate({
+    //   path: "userId",
+    //   select: "username",
+    // });
     res.status(200).json({
       message: "Success",
       data: products,
