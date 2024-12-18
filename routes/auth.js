@@ -29,6 +29,16 @@ router.get("/", async (req, res) => {
   }
 });
 
+// Get User by ID (Admin only)
+router.get("/:id", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    res.send(user);
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
 // User Login
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
