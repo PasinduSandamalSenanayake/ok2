@@ -7,11 +7,10 @@ const router = express.Router();
 
 // User Registration
 router.post("/register", async (req, res) => {
-  const { username, password, role } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const { username, seatArray, price } = req.body;
 
   try {
-    const newUser = new User({ username, password: hashedPassword, role });
+    const newUser = new User({ username, seatArray, price });
     await newUser.save();
     res.status(201).send("User Registered");
   } catch (err) {

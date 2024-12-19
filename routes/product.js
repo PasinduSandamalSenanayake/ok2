@@ -9,10 +9,10 @@ router.post(
   "/",
   // authenticate, authorize(["admin"]),
   async (req, res) => {
-    const { name, price, userId } = req.body;
+    const { name, price, userId, seat } = req.body;
 
     try {
-      const product = new Product({ name, price, userId });
+      const product = new Product({ name, price, userId, seat });
       await product.save();
       res.status(201).send("Product Created");
     } catch (err) {
