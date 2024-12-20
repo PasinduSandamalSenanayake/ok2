@@ -41,7 +41,12 @@ router.post("/", async (req, res) => {
       seatUpdateResponse: seatUpdateResponse.data,
     });
   } catch (err) {
-    res.status(400).send(err.message);
+    if (err.response && err.response.status === 400) {
+      // Relay the error message from auth.js
+      return res.status(400).json({ error: err.response.data.error });
+    }
+
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
