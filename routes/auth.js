@@ -52,6 +52,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // Update Seat Availability
+// Update Seat Availability with Validation for Already Booked Seats
 router.put("/:userId/bookedSeats", async (req, res) => {
   const { bookedSeatNumber } = req.body;
   const { userId } = req.params;
@@ -62,9 +63,25 @@ router.put("/:userId/bookedSeats", async (req, res) => {
       return res.status(404).send("User not found");
     }
 
-    // Update the seat status
+    // Find seats that are already booked
+    const alreadyBookedSeats = [];
     bookedSeatNumber.forEach((seatNum) => {
-      user.seatArray[seatNum - 1] = { [seatNum]: "booked" }; // Update to 'booked'
+      const seatStatus = user.seatArray[seatNum - 1];
+      if (seatStatus && seatStatus[seatNum] === "booked") {
+        alreadyBookedSeats.push(seatNum);
+      }
+    });
+
+    // If there are any already booked seats, return an error
+    if (alreadyBookedSeats.length > 0) {
+      return res
+        .status(400)
+        .send(`Seats ${alreadyBookedSeats.join(", ")} are already booked.`);
+    }
+
+    // Otherwise, update seat status to 'booked'
+    bookedSeatNumber.forEach((seatNum) => {
+      user.seatArray[seatNum - 1] = { [seatNum]: "booked" };
     });
 
     await user.save();
