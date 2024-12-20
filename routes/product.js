@@ -10,6 +10,14 @@ const axios = require("axios");
 router.post("/", async (req, res) => {
   const { seatCount, bookedSeatNumber, price, userId } = req.body;
 
+  const response = await axios.get(
+    `https://ok2-183873252446.asia-south1.run.app/auth/${userId}`
+  );
+  const price1 = response.data.price1;
+  const price2 = response.data.price2;
+  const price3 = response.data.price3;
+  console.log(price1, price2, price3);
+
   try {
     // Create the product
     const product = new Product({
@@ -28,7 +36,10 @@ router.post("/", async (req, res) => {
       }
     );
 
-    res.status(201).send("Product Created and Seats Updated");
+    res.status(201).send({
+      message: "Product Created and Seats Updated",
+      seatUpdateResponse: seatUpdateResponse.data,
+    });
   } catch (err) {
     res.status(400).send(err.message);
   }
