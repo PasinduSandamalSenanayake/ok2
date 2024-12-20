@@ -5,24 +5,37 @@ const { authenticate, authorize } = require("../middleware/auth");
 const router = express.Router();
 
 // Create Product (Admin only)
-router.post(
-  "/",
-  // authenticate, authorize(["admin"]),
-  async (req, res) => {
-    const { name, price, userId, seat } = req.body;
+const axios = require("axios");
 
-    try {
-      const product = new Product({ name, price, userId, seat });
-      await product.save();
-      res.status(201).send("Product Created");
-    } catch (err) {
-      res.status(400).send(err.message);
-    }
+router.post("/", async (req, res) => {
+  const { seatCount, bookedSeatNumber, price, userId } = req.body;
+
+  try {
+    // Create the product
+    const product = new Product({
+      seatCount,
+      bookedSeatNumber,
+      price,
+      userId,
+    });
+    await product.save();
+
+    // Update the seat status in auth.js
+    await axios.put(
+      `https://ok2-183873252446.asia-south1.run.app/auth/${userId}/bookedSeats`,
+      {
+        bookedSeatNumber,
+      }
+    );
+
+    res.status(201).send("Product Created and Seats Updated");
+  } catch (err) {
+    res.status(400).send(err.message);
   }
-);
+});
 
 // Get All Products
-const axios = require("axios");
+// const axios = require("axios");
 
 // Get All Products
 router.get("/", async (req, res) => {
@@ -38,13 +51,11 @@ router.get("/", async (req, res) => {
             `https://ok2-183873252446.asia-south1.run.app/auth/${product.userId}`
           );
           const username = response.data.username;
-          const userRole = response.data.role;
 
           // Add the username to the product object
           return {
             ...product.toObject(),
             username,
-            userRole,
           };
         } catch (error) {
           console.error(
