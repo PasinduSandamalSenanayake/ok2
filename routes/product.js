@@ -29,7 +29,7 @@ router.post("/", async (req, res) => {
     await product.save();
 
     // Update the seat status in auth.js
-    await axios.put(
+    const seatUpdateResponse = await axios.put(
       `https://ok2-183873252446.asia-south1.run.app/auth/${userId}/bookedSeats`,
       {
         bookedSeatNumber,
