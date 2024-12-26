@@ -116,7 +116,11 @@ router.post("/login", async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
-    res.header("Authorization", `Bearer ${token}`).send({ token });
+
+    res.header("Authorization", `Bearer ${token}`).send({
+      token,
+      message: "Login successful!",
+    });
   } catch (err) {
     res.status(500).send("Error logging in: " + err.message);
   }
