@@ -1,0 +1,69 @@
+openapi: 3.0.0
+info:
+  title: API Gateway for Your Project
+  description: This API Gateway routes requests to your backend services.
+  version: 1.0.0
+servers:
+  - url: https://YOUR_GATEWAY_DOMAIN_NAME/ # Replace this with your API Gateway domain after deployment
+
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      description: Endpoint to register a new user
+      operationId: registerUser
+      responses:
+        "201":
+          description: User registered successfully
+        "400":
+          description: All fields are required or invalid input
+        "500":
+          description: Internal server error
+      x-google-backend:
+        address: https://ok2-183873252446.asia-south1.run.app/auth/register
+
+  /auth/login:
+    post:
+      summary: Login a user
+      description: Endpoint to login a user
+      operationId: loginUser
+      responses:
+        "200":
+          description: Successful login
+        "400":
+          description: Invalid credentials or missing fields
+        "404":
+          description: User not found
+        "500":
+          description: Internal server error
+      x-google-backend:
+        address: https://ok2-183873252446.asia-south1.run.app/auth/login
+
+  /products:
+    post:
+      summary: Create a new product
+      description: Endpoint to create a product (Admin only)
+      operationId: createProduct
+      responses:
+        "201":
+          description: Product created successfully
+        "400":
+          description: Missing required fields
+        "403":
+          description: Access denied
+        "500":
+          description: Internal server error
+      x-google-backend:
+        address: https://ok2-183873252446.asia-south1.run.app/products/
+
+    get:
+      summary: Get all products
+      description: Retrieve all available products
+      operationId: getProducts
+      responses:
+        "200":
+          description: List of all products
+        "500":
+          description: Internal server error
+      x-google-backend:
+        address: https://ok2-183873252446.asia-south1.run.app/products/
