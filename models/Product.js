@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 const { productDB, userDB } = require("../database/db");
+const e = require("express");
 
 const productSchema = new mongoose.Schema({
   //   _id: mongoose.Schema.Types.ObjectId,
-  seatCount: { type: Number, required: true },
-  bookedSeatNumber: { type: Array, required: true },
-  price: { type: Number, required: true },
+  name: { type: String, required: true },
+  price: { type: Number },
   userId: { type: String, required: true },
 });
 

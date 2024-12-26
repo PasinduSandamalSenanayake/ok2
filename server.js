@@ -1,30 +1,22 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const swaggerUi = require("swagger-ui-express");
 require("dotenv").config();
 
+const swaggerDocs = require("./swaggerConfig");
 const authRoutes = require("./routes/auth");
 const productRoutes = require("./routes/product");
 
 const app = express();
 app.use(bodyParser.json());
 
+// Swagger route
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
 // Routes
 app.use("/auth", authRoutes);
 app.use("/products", productRoutes);
-
-// Connect to MongoDB and Start Server
-// mongoose
-//   .connect(process.env.MONGO_URI, {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//   })
-//   .then(() => {
-//     app.listen(process.env.PORT1, () =>
-//       console.log(`Server running on port ${process.env.PORT1}`)
-//     );
-//   })
-//   .catch((err) => console.log(err));
 
 const PORT = process.env.PORT1;
 app.listen(PORT, () => {

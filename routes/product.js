@@ -1,122 +1,100 @@
 const express = require("express");
-const Product = require("../models/Product");
 const { authenticate, authorize } = require("../middleware/auth");
-
+const Product = require("../models/Product");
 const router = express.Router();
 
-// Create Product (Admin only)
-const axios = require("axios");
+/**
+ * @swagger
+ * /products:
+ *   post:
+ *     summary: Create a new product
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Name of the product.
+ *                 example: iPhone 14
+ *               price:
+ *                 type: number
+ *                 description: Price of the product.
+ *                 example: 999.99
+ *     responses:
+ *       201:
+ *         description: Product created successfully.
+ *       400:
+ *         description: Missing required fields.
+ *       500:
+ *         description: Internal server error.
+ */
+router.post("/", authenticate, authorize(["admin"]), async (req, res) => {
+  const { name, price } = req.body;
 
-router.post("/", async (req, res) => {
-  const { seatCount, bookedSeatNumber, price, userId } = req.body;
-
-  const response = await axios.get(
-    `https://ok2-183873252446.asia-south1.run.app/auth/${userId}`
-  );
-  const price1 = response.data.price1;
-  const price2 = response.data.price2;
-  const price3 = response.data.price3;
-  console.log(price1, price2, price3);
+  if (!name || !price) {
+    return res.status(400).send("All fields are required.");
+  }
 
   try {
-    // Create the product
-    const product = new Product({
-      seatCount,
-      bookedSeatNumber,
-      price,
-      userId,
-    });
+    const product = new Product({ name, price, userId: req.user._id });
     await product.save();
 
-    // Update the seat status in auth.js
-    const seatUpdateResponse = await axios.put(
-      `https://ok2-183873252446.asia-south1.run.app/auth/${userId}/bookedSeats`,
-      {
-        bookedSeatNumber,
-      }
-    );
-
-    res.status(201).send({
-      message: "Product Created and Seats Updated",
-      seatUpdateResponse: seatUpdateResponse.data,
-    });
+    res.status(201).send("Product created successfully.");
   } catch (err) {
-    if (err.response && err.response.status === 400) {
-      // Relay the error message from auth.js
-      return res.status(400).json({ error: err.response.data.error });
-    }
-
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).send("Error creating product: " + err.message);
   }
 });
 
-// Get All Products
-// const axios = require("axios");
-
-// Get All Products
+/**
+ * @swagger
+ * /products:
+ *   get:
+ *     summary: Get all products
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of all products.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: Product ID.
+ *                     example: 64a7e3b52b7c3f42d8e88c6b
+ *                   name:
+ *                     type: string
+ *                     description: Name of the product.
+ *                     example: iPhone 14
+ *                   price:
+ *                     type: number
+ *                     description: Price of the product.
+ *                     example: 999.99
+ *                   userId:
+ *                     type: string
+ *                     description: ID of the user who created the product.
+ *                     example: 64a7e3b52b7c3f42d8e88c6a
+ *       500:
+ *         description: Internal server error.
+ */
 router.get("/", async (req, res) => {
+  // console.log("User Role:", req.user.role);
   try {
     const products = await Product.find();
-
-    // Fetch user details for each product
-    const enrichedProducts = await Promise.all(
-      products.map(async (product) => {
-        try {
-          // Fetch user details from the auth API
-          const response = await axios.get(
-            `https://ok2-183873252446.asia-south1.run.app/auth/${product.userId}`
-          );
-          const username = response.data.username;
-
-          // Add the username to the product object
-          return {
-            ...product.toObject(),
-            username,
-          };
-        } catch (error) {
-          console.error(
-            `Error fetching user details for userId: ${product.userId}`,
-            error.message
-          );
-          return {
-            ...product.toObject(),
-            username: "Unknown", // Fallback if the API call fails
-          };
-        }
-      })
-    );
-
-    res.status(200).json({
-      message: "Success",
-      data: enrichedProducts,
-    });
+    res.status(200).json(products);
   } catch (err) {
-    res.status(400).send(err.message);
-  }
-});
-
-// Delete Product (Admin only)
-router.delete("/:id", authenticate, authorize(["admin"]), async (req, res) => {
-  try {
-    await Product.findByIdAndDelete(req.params.id);
-    res.send("Product Deleted");
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
-});
-
-// Update Product (Manager only)
-router.put("/:id", authenticate, authorize(["manager"]), async (req, res) => {
-  try {
-    const { name, price } = req.body;
-    const updatedProduct = await Product.findByIdAndUpdate(
-      req.params.id,
-      { name, price },
-      { new: true }
-    );
-    res.send(updatedProduct);
-  } catch (err) {
-    res.status(400).send(err.message);
+    res.status(500).send("Error retrieving products: " + err.message);
   }
 });
 
