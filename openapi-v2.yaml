@@ -1,0 +1,107 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: API Gateway for Your Project
+  description: This API Gateway routes requests to your backend services.
+  contact: {}
+host: YOUR_GATEWAY_DOMAIN_NAME
+basePath: /
+securityDefinitions: {}
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /auth/register:
+    post:
+      description: Endpoint to register a new user
+      summary: registerUser
+      operationId: registerUser
+      deprecated: false
+      produces:
+        - application/json
+      parameters: []
+      responses:
+        "201":
+          description: User registered successfully
+          headers: {}
+        "400":
+          description: All fields are required or invalid input
+          headers: {}
+        "500":
+          description: Internal server error
+          headers: {}
+      x-google-backend:
+        address: "https://ok2-183873252446.asia-south1.run.app/auth/register"
+
+  /auth/login:
+    post:
+      description: Endpoint to login a user
+      summary: loginUser
+      operationId: loginUser
+      deprecated: false
+      produces:
+        - application/json
+      parameters: []
+      responses:
+        "200":
+          description: Successful login
+          headers: {}
+        "400":
+          description: Invalid credentials or missing fields
+          headers: {}
+        "404":
+          description: User not found
+          headers: {}
+        "500":
+          description: Internal server error
+          headers: {}
+      x-google-backend:
+        address: "https://ok2-183873252446.asia-south1.run.app/auth/login"
+
+  /products:
+    post:
+      description: Endpoint to create a product (Admin only)
+      summary: createProduct
+      operationId: createProduct
+      deprecated: false
+      produces:
+        - application/json
+      parameters: []
+      responses:
+        "201":
+          description: Product created successfully
+          headers: {}
+        "400":
+          description: Missing required fields
+          headers: {}
+        "403":
+          description: Access denied
+          headers: {}
+        "500":
+          description: Internal server error
+          headers: {}
+      x-google-backend:
+        address: "https://ok2-183873252446.asia-south1.run.app/products"
+
+    get:
+      description: Retrieve all available products
+      summary: getProducts
+      operationId: getProducts
+      deprecated: false
+      produces:
+        - application/json
+      parameters: []
+      responses:
+        "200":
+          description: List of all products
+          headers: {}
+        "500":
+          description: Internal server error
+          headers: {}
+      x-google-backend:
+        address: "https://ok2-183873252446.asia-south1.run.app/products"
+
+tags: []
