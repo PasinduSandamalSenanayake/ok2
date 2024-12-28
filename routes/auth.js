@@ -98,10 +98,10 @@ router.post("/register", async (req, res) => {
  *         description: Internal server error.
  */
 router.post("/login", async (req, res) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  const { username, password } = req.body;
+  // res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+  // res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+  // res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  // const { username, password } = req.body;
 
   if (!username || !password) {
     return res.status(400).send("All fields are required.");
