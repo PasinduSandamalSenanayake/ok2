@@ -22,13 +22,13 @@ app.use(
 );
 
 // Middleware to handle OPTIONS requests (preflight)
-app.options("*", (req, res) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.status(204).send(); // No content for OPTIONS
-});
+// app.options("*", (req, res) => {
+//   res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+//   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+//   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//   res.header("Access-Control-Allow-Credentials", "true");
+//   res.status(204).send(); // No content for OPTIONS
+// });
 
 // Middleware to parse JSON
 app.use(bodyParser.json());
